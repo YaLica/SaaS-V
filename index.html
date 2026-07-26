@@ -197,7 +197,7 @@
             <!-- ⭐️ ЗОЛОТОЙ ФОНД -->
             <h2 class="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-2 ml-2">Золотой фонд</h2>
             <div class="bg-gradient-to-b from-amber-50 to-white rounded-3xl shadow-sm border border-amber-200/60 overflow-hidden">
-                <button class="w-full flex items-center justify-between px-5 py-4 active:bg-amber-100/50 transition-colors">
+                <button onclick="openSavedFolders()" class="w-full flex items-center justify-between px-5 py-4 active:bg-amber-100/50 transition-colors">
                     <div class="flex items-center gap-3">
                         <span class="text-xl">⭐️</span>
                         <div class="text-left">
@@ -220,7 +220,7 @@
     <script>
         const API_URL = 'https://rental-scarcity-bagging.ngrok-free.dev';
 
-        // ИЗОЛИРОВАННАЯ ПАМЯТЬ
+        // ИЗОЛИРОВАННАЯ ПАМЯТЬ: Ключ переименован, чтобы админка его не перезаписывала
         let currentTheme = localStorage.getItem('owner_master_theme') || 'white';
         let displayLimit = parseInt(localStorage.getItem('owner_limit')) || 20;
 
@@ -265,7 +265,7 @@
             });
         }
 
-        // ОБНОВЛЕНИЕ ТЕМЫ
+        // ОБНОВЛЕНИЕ ТЕМЫ: Читает память при обычном заходе и при возврате кнопкой "назад"
         window.addEventListener('DOMContentLoaded', () => {
             currentTheme = localStorage.getItem('owner_master_theme') || 'white';
             applyTheme(currentTheme);
@@ -302,8 +302,7 @@
                     btn.className = 'flex-1 py-3 rounded-2xl text-xs font-bold bg-slate-100 text-slate-500 transition-all';
                 }
             });
-            // ДОБАВЛЕН ХВОСТ ngrok-skip-browser-warning=true
-            await fetch(`${API_URL}/api/settings/retention?ngrok-skip-browser-warning=true`, {
+            await fetch(`${API_URL}/api/settings/retention`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
                 body: JSON.stringify({ months })
@@ -311,11 +310,17 @@
         }
 
         async function loadArchiveReviews() {
-            // ДОБАВЛЕН ХВОСТ ngrok-skip-browser-warning=true (ИЗ-ЗА НЕГО АРХИВ БЛОКИРОВАЛО)
-            const res = await fetch(`${API_URL}/api/reviews?ngrok-skip-browser-warning=true`, {
+            // Подгружаем реальные отзывы с сайта (ОРИГИНАЛЬНЫЙ КОД БЕЗ ИЗМЕНЕНИЙ)
+            const res = await fetch(`${API_URL}/api/reviews`, {
                 headers: { 'ngrok-skip-browser-warning': 'true' }
             });
             const data = await res.json();
+
+            const savedRes = await fetch(`${API_URL}/api/saved`, {
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+            });
+            const savedData = await savedRes.json();
+            const savedIds = savedData.map(s => s.original_id);
 
             let html = `
                 <div class="bg-white/80 backdrop-blur-md px-4 py-4 flex items-center justify-between border-b border-slate-200/50 shadow-sm sticky top-0 z-10">
@@ -337,6 +342,11 @@
                         displayTime = displayTime.substring(0, displayTime.lastIndexOf(':'));
                     }
 
+                    const isSaved = savedIds.includes(r.id);
+                    const buttonHtml = isSaved
+                        ? `<button disabled class="mt-3 w-full py-2 rounded-xl bg-slate-100 text-slate-400 text-xs font-bold border border-slate-200 cursor-default">✓ Сохранено</button>`
+                        : `<button onclick="saveReview(${r.id}, this)" class="mt-3 w-full py-2 rounded-xl bg-amber-50 text-amber-700 text-xs font-bold border border-amber-200 active:bg-amber-100 transition-colors">⭐️ Сохранить</button>`;
+
                     html += `
                     <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/60">
                         <div class="flex justify-between items-center mb-1">
@@ -345,6 +355,7 @@
                         </div>
                         <p class="text-sm text-slate-700">${r.text}</p>
                         ${r.admin_answer ? `<p class="text-xs text-emerald-600 mt-2 border-l-2 border-emerald-500 pl-2">Ответ: ${r.admin_answer}</p>` : ''}
+                        ${buttonHtml}
                     </div>`;
                 });
             }
@@ -357,6 +368,159 @@
 
         function closeArchiveList() {
             document.getElementById('archive-list-screen').classList.add('hidden');
+        }
+
+        // --- ⭐️ СОХРАНЁННЫЕ ---
+        async function saveReview(reviewId, btn) {
+            btn.disabled = true;
+            try {
+                const res = await fetch(`${API_URL}/api/saved/${reviewId}`, {
+                    method: 'POST',
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
+                const data = await res.json();
+                if (data.already) {
+                    btn.textContent = '✓ Уже в сохранённых';
+                    btn.className = 'mt-3 w-full py-2 rounded-xl bg-slate-100 text-slate-400 text-xs font-bold border border-slate-200';
+                } else {
+                    btn.textContent = '✓ Сохранено';
+                    btn.className = 'mt-3 w-full py-2 rounded-xl bg-slate-100 text-slate-400 text-xs font-bold border border-slate-200 cursor-default';
+                }
+            } catch (e) {
+                btn.disabled = false;
+                alert('Ошибка сохранения');
+            }
+        }
+
+        // --- ⭐️ ЭКРАН ПОДПАПОК "СОХРАНЁННЫЕ" (Золотой фонд) ---
+        function openSavedFolders() {
+            const html = `
+                <div class="bg-white/80 backdrop-blur-md px-4 py-4 flex items-center justify-between border-b border-slate-200/50 shadow-sm sticky top-0 z-10">
+                    <button onclick="closeArchiveList()" class="text-slate-500 font-semibold text-base flex items-center gap-1 active:opacity-50 transition-opacity">
+                        <span class="text-xl leading-none -mt-1">‹</span> Назад
+                    </button>
+                    <h1 class="text-lg font-black text-amber-600 tracking-tight">⭐️ Сохранённые</h1>
+                    <div class="w-16"></div>
+                </div>
+                <div class="px-5 pt-6">
+                    <h2 class="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-2 ml-2">Разделы избранного</h2>
+                    <div class="bg-gradient-to-b from-amber-50 to-white rounded-3xl shadow-sm border border-amber-200/60 overflow-hidden">
+
+                        <button onclick="loadSavedReviews()" class="w-full flex items-center justify-between px-5 py-4 border-b border-amber-100 active:bg-amber-100/50 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xl">📄</span>
+                                <span class="text-base font-bold text-amber-950">Отзывы</span>
+                            </div>
+                            <span class="text-amber-300 text-xl font-light">›</span>
+                        </button>
+
+                        <button onclick="loadSavedEmpty('📥 Заявки')" class="w-full flex items-center justify-between px-5 py-4 border-b border-amber-100 active:bg-amber-100/50 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xl">📥</span>
+                                <span class="text-base font-bold text-amber-950">Заявки</span>
+                            </div>
+                            <span class="text-amber-300 text-xl font-light">›</span>
+                        </button>
+
+                        <button onclick="loadSavedEmpty('📅 Записи')" class="w-full flex items-center justify-between px-5 py-4 border-b border-amber-100 active:bg-amber-100/50 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xl">📅</span>
+                                <span class="text-base font-bold text-amber-950">Записи</span>
+                            </div>
+                            <span class="text-amber-300 text-xl font-light">›</span>
+                        </button>
+
+                        <button onclick="loadSavedEmpty('⚖️ Рабочее время')" class="w-full flex items-center justify-between px-5 py-4 active:bg-amber-100/50 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xl">⚖️</span>
+                                <span class="text-base font-bold text-amber-950">Рабочее время</span>
+                            </div>
+                            <span class="text-amber-300 text-xl font-light">›</span>
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-amber-700/60 mt-4 text-center leading-tight">Избранное хранится вечно и не сгорает.</p>
+                </div>`;
+
+            const screen = document.getElementById('archive-list-screen');
+            screen.innerHTML = html;
+            screen.classList.remove('hidden');
+        }
+
+        // Заглушка для пустых подпапок (Заявки / Записи / Рабочее время)
+        function loadSavedEmpty(title) {
+            const html = `
+                <div class="bg-white/80 backdrop-blur-md px-4 py-4 flex items-center justify-between border-b border-slate-200/50 shadow-sm sticky top-0 z-10">
+                    <button onclick="openSavedFolders()" class="text-slate-500 font-semibold text-base flex items-center gap-1 active:opacity-50 transition-opacity">
+                        <span class="text-xl leading-none -mt-1">‹</span> Назад
+                    </button>
+                    <h1 class="text-lg font-black text-amber-600 tracking-tight">${title}</h1>
+                    <div class="w-16"></div>
+                </div>
+                <div class="px-5 pt-6">
+                    <p class="text-center text-slate-400 py-16">Здесь пока пусто</p>
+                </div>`;
+
+            const screen = document.getElementById('archive-list-screen');
+            screen.innerHTML = html;
+            screen.classList.remove('hidden');
+        }
+
+        async function loadSavedReviews() {
+            const res = await fetch(`${API_URL}/api/saved`, {
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+            });
+            const data = await res.json();
+
+            let html = `
+                <div class="bg-white/80 backdrop-blur-md px-4 py-4 flex items-center justify-between border-b border-slate-200/50 shadow-sm sticky top-0 z-10">
+                    <button onclick="openSavedFolders()" class="text-slate-500 font-semibold text-base flex items-center gap-1 active:opacity-50 transition-opacity">
+                        <span class="text-xl leading-none -mt-1">‹</span> Назад
+                    </button>
+                    <h1 class="text-lg font-black text-amber-600 tracking-tight">⭐️ Сохранённые</h1>
+                    <div class="w-16"></div>
+                </div>
+                <div class="px-5 pt-6 space-y-3">`;
+
+            if (data.length === 0) {
+                html += `<p class="text-center text-slate-400 py-12">Здесь пока пусто</p>`;
+            } else {
+                data.forEach(r => {
+                    let displayTime = r.created_at || '';
+                    if (displayTime.length > 5 && displayTime.includes(':')) {
+                        displayTime = displayTime.substring(0, displayTime.lastIndexOf(':'));
+                    }
+                    html += `
+                    <div class="bg-gradient-to-b from-amber-50 to-white rounded-2xl p-4 shadow-sm border border-amber-200/60">
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-bold text-amber-950">${r.author_name}</h3>
+                            <span class="text-[11px] text-amber-400">${displayTime}</span>
+                        </div>
+                        <p class="text-sm text-slate-700">${r.text}</p>
+                        ${r.admin_answer ? `<p class="text-xs text-emerald-600 mt-2 border-l-2 border-emerald-500 pl-2">Ответ: ${r.admin_answer}</p>` : ''}
+                        <button onclick="deleteSaved(${r.id}, this)" class="mt-3 w-full py-2 rounded-xl bg-red-50 text-red-600 text-xs font-bold border border-red-200 active:bg-red-100 transition-colors">🗑 Удалить</button>
+                    </div>`;
+                });
+            }
+            html += `</div>`;
+
+            const screen = document.getElementById('archive-list-screen');
+            screen.innerHTML = html;
+            screen.classList.remove('hidden');
+        }
+
+        async function deleteSaved(savedId, btn) {
+            if (!confirm('Удалить из сохранённых навсегда?')) return;
+            btn.disabled = true;
+            try {
+                await fetch(`${API_URL}/api/saved/${savedId}`, {
+                    method: 'DELETE',
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
+                btn.closest('.rounded-2xl').remove();
+            } catch (e) {
+                btn.disabled = false;
+                alert('Ошибка удаления');
+            }
         }
     </script>
 </body>
