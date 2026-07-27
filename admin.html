@@ -1,369 +1,655 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Модератор PRO</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        safelist: [
-          'bg-slate-100','bg-slate-950','bg-sky-200/90','bg-amber-200/90','bg-emerald-200/90',
-          'bg-white','bg-slate-900','bg-sky-50','bg-amber-50','bg-emerald-50',
-          'border-slate-200','border-slate-800','border-sky-200','border-amber-200','border-emerald-200',
-          'text-slate-900','text-white','text-sky-950','text-amber-950','text-emerald-950'
-        ]
-      }
-    </script>
-    <style>
-        button:active { transform: scale(0.97); }
-        .theme-transition { transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
-        input, textarea, select { font-size: 16px !important; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Модератор PRO</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+safelist: [
+'bg-slate-100','bg-slate-950','bg-sky-200/90','bg-amber-200/90','bg-emerald-200/90',
+'bg-white','bg-slate-900','bg-sky-50','bg-amber-50','bg-emerald-50',
+'border-slate-200','border-slate-800','border-sky-200','border-amber-200','border-emerald-200',
+'text-slate-900','text-white','text-sky-950','text-amber-950','text-emerald-950'
+]
+}
+</script>
+<style>
+button:active { transform: scale(0.97); }
+.theme-transition { transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
+input, textarea, select { font-size: 16px !important; }
+</style>
 </head>
 <body id="app-body" class="bg-slate-100 min-h-screen p-2 sm:p-6 font-sans text-slate-800 antialiased pb-20 theme-transition">
 
-    <!-- Главный контейнер -->
-    <div id="app-card" class="max-w-2xl mx-auto rounded-2xl shadow-md border p-4 sm:p-6 theme-transition bg-white">
-        
-        <!-- Шапка -->
-        <div class="flex items-center justify-between pb-3 mb-3 border-b border-black/10">
-            <div class="flex items-center gap-2">
-                <div class="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse shadow-sm"></div>
-                <h1 id="header-title" class="text-xl font-black tracking-tight text-slate-900">Рабочая Панель</h1>
-            </div>
-            
-            <!-- Кнопки управления -->
-            <div class="flex items-center gap-1.5">
-                <button onclick="window.location.href='owner.html'" class="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-700 transition-all active:bg-slate-300" title="В хаб Владельца">
-                    🏠
-                </button>
-                <button onclick="toggleSettings()" class="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-700 transition-all active:bg-slate-300" title="Настройки">
-                    ⚙️
-                </button>
-            </div>
+<!-- Главный контейнер -->
+<div id="app-card" class="max-w-2xl mx-auto rounded-2xl shadow-md border p-4 sm:p-6 theme-transition bg-white">
+
+<!-- Шапка -->
+<div class="flex items-center justify-between pb-3 mb-3 border-b border-black/10">
+    <div class="flex items-center gap-2">
+        <div class="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse shadow-sm"></div>
+        <h1 id="header-title" class="text-xl font-black tracking-tight text-slate-900">Рабочая Панель</h1>
+    </div>
+    
+    <!-- Кнопки управления -->
+    <div class="flex items-center gap-1.5">
+        <button onclick="window.location.href='owner.html'" class="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-700 transition-all active:bg-slate-300" title="В хаб Владельца">
+            🏠
+        </button>
+        <button onclick="toggleSettings()" class="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-700 transition-all active:bg-slate-300" title="Настройки">
+            ⚙️
+        </button>
+    </div>
+</div>
+
+<!-- Настройки (Скрытые) -->
+<div id="settings-panel" class="hidden mb-4 p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-4 shadow-sm">
+    <div class="flex justify-between items-center border-b pb-2">
+        <span class="font-extrabold text-slate-800 text-sm">⚙️ Настройки и Палитра</span>
+        <button onclick="toggleSettings()" class="text-slate-400 font-bold hover:text-slate-600">✕ Закрыть</button>
+    </div>
+    
+    <div>
+        <label class="block font-bold text-slate-700 mb-2">Цвет темы для экрана: <span id="settings-tab-name" class="text-emerald-600">⭐ Отзывы</span></label>
+        <div class="grid grid-cols-5 gap-1.5 text-center">
+            <button onclick="setTabTheme('white')" class="p-2 rounded-xl border-2 border-slate-300 bg-white text-slate-800 font-bold text-[10px]">⚪ Белая</button>
+            <button onclick="setTabTheme('dark')" class="p-2 rounded-xl border-2 border-slate-700 bg-slate-900 text-white font-bold text-[10px]">🌙 Тёмная</button>
+            <button onclick="setTabTheme('blue')" class="p-2 rounded-xl border-2 border-sky-400 bg-sky-300 text-sky-950 font-black text-[10px]">🩵 Голубой</button>
+            <button onclick="setTabTheme('yellow')" class="p-2 rounded-xl border-2 border-amber-400 bg-amber-300 text-amber-950 font-black text-[10px]">💛 Желтый</button>
+            <button onclick="setTabTheme('green')" class="p-2 rounded-xl border-2 border-emerald-400 bg-emerald-300 text-emerald-950 font-black text-[10px]">💚 Мята</button>
         </div>
-
-        <!-- Настройки (Скрытые) -->
-        <div id="settings-panel" class="hidden mb-4 p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-4 shadow-sm">
-            <div class="flex justify-between items-center border-b pb-2">
-                <span class="font-extrabold text-slate-800 text-sm">⚙️ Настройки и Палитра</span>
-                <button onclick="toggleSettings()" class="text-slate-400 font-bold hover:text-slate-600">✕ Закрыть</button>
-            </div>
-            
-            <div>
-                <label class="block font-bold text-slate-700 mb-2">Цвет темы для экрана: <span id="settings-tab-name" class="text-emerald-600">⭐ Отзывы</span></label>
-                <div class="grid grid-cols-5 gap-1.5 text-center">
-                    <button onclick="setTabTheme('white')" class="p-2 rounded-xl border-2 border-slate-300 bg-white text-slate-800 font-bold text-[10px]">⚪ Белая</button>
-                    <button onclick="setTabTheme('dark')" class="p-2 rounded-xl border-2 border-slate-700 bg-slate-900 text-white font-bold text-[10px]">🌙 Тёмная</button>
-                    <button onclick="setTabTheme('blue')" class="p-2 rounded-xl border-2 border-sky-400 bg-sky-300 text-sky-950 font-black text-[10px]">🩵 Голубой</button>
-                    <button onclick="setTabTheme('yellow')" class="p-2 rounded-xl border-2 border-amber-400 bg-amber-300 text-amber-950 font-black text-[10px]">💛 Желтый</button>
-                    <button onclick="setTabTheme('green')" class="p-2 rounded-xl border-2 border-emerald-400 bg-emerald-300 text-emerald-950 font-black text-[10px]">💚 Мята</button>
-                </div>
-            </div>
-
-            <div>
-                <label class="block font-bold text-slate-700 mb-1.5">Показывать карточек на экране:</label>
-                <div class="flex gap-2">
-                    <button onclick="setLimit(15)" id="limit-15" class="flex-1 py-1.5 rounded-lg border font-bold bg-white text-slate-700">15 шт</button>
-                    <button onclick="setLimit(20)" id="limit-20" class="flex-1 py-1.5 rounded-lg border font-bold bg-white text-slate-700">20 шт</button>
-                    <button onclick="setLimit(25)" id="limit-25" class="flex-1 py-1.5 rounded-lg border font-bold bg-white text-slate-700">25 шт</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Вкладки -->
-        <div class="flex bg-slate-100 p-1 rounded-xl mb-4 gap-1 text-xs sm:text-sm font-bold">
-            <button id="tab-reviews" onclick="switchTab('reviews')" class="flex-1 py-2 rounded-lg bg-white shadow-sm text-slate-900 transition-all">⭐ Отзывы</button>
-            <button id="tab-leads" onclick="switchTab('leads')" class="flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-900 transition-all">📩 Заявки</button>
-            <button id="tab-appointments" onclick="switchTab('appointments')" class="flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-900 transition-all">📅 Запись</button>
-        </div>
-
-        <!-- Вкладка Отзывы -->
-        <div id="content-reviews" class="space-y-4">
-            <div id="reviews-container" class="space-y-4"></div>
-            <!-- Кнопка "показать все", если отзывов больше лимита -->
-            <div id="load-more-container" class="hidden pt-2">
-                <button onclick="toggleShowAll()" id="load-more-btn" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2">🔽 Показать все</button>
-            </div>
-        </div>
-
-        <!-- Вкладка Заявки -->
-        <div id="content-leads" class="hidden text-center py-12">
-            <p class="text-4xl mb-2">📥</p>
-            <h3 class="font-bold text-slate-800 mb-1">Модуль «Заявки / Лиды»</h3>
-            <p class="text-xs text-slate-500 max-w-xs mx-auto">Скоро здесь будут контакты с форм</p>
-        </div>
-
-        <!-- Вкладка Запись -->
-        <div id="content-appointments" class="hidden text-center py-12">
-            <p class="text-4xl mb-2">📆</p>
-            <h3 class="font-bold text-slate-800 mb-1">Модуль «Онлайн-запись»</h3>
-            <p class="text-xs text-slate-500 max-w-xs mx-auto">Скоро здесь будет календарь бронирований</p>
-        </div>
-
     </div>
 
-    <script>
-        const API_URL = 'http://201.24.115.170:8000';
-        let allReviews = [];
-        let showAll = false;
-        let currentTab = 'reviews';
+    <div>
+        <label class="block font-bold text-slate-700 mb-1.5">Показывать карточек на экране:</label>
+        <div class="flex gap-2">
+            <button onclick="setLimit(15)" id="limit-15" class="flex-1 py-1.5 rounded-lg border font-bold bg-white text-slate-700">15 шт</button>
+            <button onclick="setLimit(20)" id="limit-20" class="flex-1 py-1.5 rounded-lg border font-bold bg-white text-slate-700">20 шт</button>
+            <button onclick="setLimit(25)" id="limit-25" class="flex-1 py-1.5 rounded-lg border font-bold bg-white text-slate-700">25 шт</button>
+        </div>
+    </div>
+</div>
 
-        const tabNamesRU = {
-            'reviews': '⭐ Отзывы',
-            'leads': '📩 Заявки',
-            'appointments': '📅 Запись'
-        };
+<!-- Вкладки -->
+<div class="flex bg-slate-100 p-1 rounded-xl mb-4 gap-1 text-xs sm:text-sm font-bold">
+    <button id="tab-reviews" onclick="switchTab('reviews')" class="flex-1 py-2 rounded-lg bg-white shadow-sm text-slate-900 transition-all">⭐ Отзывы</button>
+    <button id="tab-leads" onclick="switchTab('leads')" class="flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-900 transition-all">📩 Заявки</button>
+    <button id="tab-questions" onclick="switchTab('questions')" class="flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-900 transition-all">❓ Вопросы</button>
+</div>
 
-        // ИЗОЛИРОВАННЫЕ КЛЮЧИ АДМИНКИ.
-        const ADMIN_KEYS = {
-            limit: 'admin_panel_limit',
-            reviews: 'admin_panel_theme_reviews',
-            leads: 'admin_panel_theme_leads',
-            appointments: 'admin_panel_theme_appointments'
-        };
+<!-- Вкладка Отзывы -->
+<div id="content-reviews" class="space-y-4">
+    <div id="reviews-container" class="space-y-4"></div>
+    <!-- Кнопка "показать все", если отзывов больше лимита -->
+    <div id="load-more-container" class="hidden pt-2">
+        <button onclick="toggleShowAll()" id="load-more-btn" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2">🔽 Показать все</button>
+    </div>
+</div>
 
-        let displayLimit = parseInt(localStorage.getItem(ADMIN_KEYS.limit)) || 20;
+<!-- Вкладка Заявки -->
+<div id="content-leads" class="hidden space-y-4">
+    <!-- Под-табы: Новые / Принятые -->
+    <div class="flex bg-slate-100 p-1 rounded-xl gap-1 text-xs font-bold">
+        <button id="subtab-new" onclick="switchLeadTab('new')" class="flex-1 py-2 rounded-lg bg-white shadow-sm text-slate-900 font-extrabold transition-all">📥 Новые</button>
+        <button id="subtab-done" onclick="switchLeadTab('done')" class="flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-900 transition-all">✅ Принятые</button>
+    </div>
 
-        let tabThemes = {
-            reviews: localStorage.getItem(ADMIN_KEYS.reviews) || 'blue',
-            leads: localStorage.getItem(ADMIN_KEYS.leads) || 'yellow',
-            appointments: localStorage.getItem(ADMIN_KEYS.appointments) || 'green'
-        };
+    <!-- Контейнер: Новые -->
+    <div id="leads-new-container" class="space-y-4"></div>
+    <!-- Кнопка "показать все" для НОВЫХ заявок -->
+    <div id="leads-new-more-container" class="hidden pt-2">
+        <button onclick="toggleShowAllLeadsNew()" id="leads-new-more-btn" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2">🔽 Показать все</button>
+    </div>
 
-        const themeStyles = {
-            white: { body: 'bg-slate-100', card: 'bg-white border-slate-200', text: 'text-slate-900' },
-            dark: { body: 'bg-slate-950', card: 'bg-slate-900 border-slate-800 text-white', text: 'text-white' },
-            blue: { body: 'bg-sky-200/90', card: 'bg-sky-50 border-sky-200', text: 'text-sky-950' },
-            yellow: { body: 'bg-amber-200/90', card: 'bg-amber-50 border-amber-200', text: 'text-amber-950' },
-            green: { body: 'bg-emerald-200/90', card: 'bg-emerald-50 border-emerald-200', text: 'text-emerald-950' }
-        };
+    <!-- Контейнер: Принятые -->
+    <div id="leads-done-container" class="hidden space-y-4"></div>
+    <!-- Кнопка "показать все" для ПРИНЯТЫХ заявок -->
+    <div id="leads-done-more-container" class="hidden pt-2">
+        <button onclick="toggleShowAllLeadsDone()" id="leads-done-more-btn" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2">🔽 Показать все</button>
+    </div>
+</div>
 
-        function applyTheme(themeName) {
-            const body = document.getElementById('app-body');
-            const card = document.getElementById('app-card');
-            const title = document.getElementById('header-title');
-            
-            body.className = `min-h-screen p-2 sm:p-6 font-sans antialiased pb-20 theme-transition ${themeStyles[themeName].body}`;
-            card.className = `max-w-2xl mx-auto rounded-2xl shadow-md border p-4 sm:p-6 theme-transition ${themeStyles[themeName].card}`;
-            title.className = `text-xl font-black tracking-tight ${themeStyles[themeName].text}`;
-        }
+<!-- Тост-уведомление для МАХ (копирование номера) -->
+<div id="max-toast" class="hidden fixed left-1/2 bottom-6 -translate-x-1/2 z-50 w-[92%] max-w-sm bg-emerald-50 border-2 border-emerald-300 rounded-2xl shadow-2xl p-4 text-center">
+    <p class="text-sm font-bold text-emerald-900 mb-1">📋 <span id="max-toast-phone"></span></p>
+    <p class="text-xs text-emerald-700 leading-relaxed mb-3">Номер скопирован!<br>Вставьте его в поиск приложения MAX, чтобы написать клиенту.</p>
+    <div class="flex gap-2">
+        <button onclick="closeMaxToast()" class="flex-1 py-2.5 bg-white border border-emerald-300 text-emerald-700 rounded-xl font-bold text-xs hover:bg-emerald-100 transition-all">Закрыть</button>
+        <a href="https://max.ru" target="_blank" onclick="closeMaxToast()" class="flex-1 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs hover:bg-emerald-700 transition-all">Открыть MAX 🚀</a>
+    </div>
+</div>
 
-        function setTabTheme(themeName) {
-            tabThemes[currentTab] = themeName;
-            localStorage.setItem(ADMIN_KEYS[currentTab], themeName);
-            applyTheme(themeName);
-        }
+<!-- Вкладка Вопросы -->
+<div id="content-questions" class="hidden text-center py-12">
+    <p class="text-4xl mb-2">❓</p>
+    <h3 class="font-bold text-slate-800 mb-1">Вопросы от подписчиков</h3>
+    <p class="text-xs text-slate-500 max-w-xs mx-auto">Здесь будут вопросы от подписчиков. Раздел в разработке.</p>
+</div>
 
-        function toggleSettings() {
-            document.getElementById('settings-panel').classList.toggle('hidden');
-            updateSettingsUI();
-        }
+</div>
 
-        function setLimit(val) {
-            displayLimit = val;
-            localStorage.setItem(ADMIN_KEYS.limit, val);
-            updateSettingsUI();
-            renderReviews();
-        }
 
-        function updateSettingsUI() {
-            [15, 20, 25].forEach(l => {
-                const btn = document.getElementById(`limit-${l}`);
-                if (btn) btn.className = (l === displayLimit) 
-                    ? 'flex-1 py-1.5 rounded-lg border-2 border-emerald-500 font-extrabold bg-emerald-50 text-emerald-800'
-                    : 'flex-1 py-1.5 rounded-lg border font-bold bg-white text-slate-700';
-            });
-        }
+<script>
+const API_URL = 'http://201.24.115.170:8000';
+let allReviews = [];
+let showAll = false;
+let currentTab = 'reviews';
 
-        function switchTab(tabName) {
-            currentTab = tabName;
-            ['reviews', 'leads', 'appointments'].forEach(tab => {
-                document.getElementById(`content-${tab}`).classList.add('hidden');
-                document.getElementById(`tab-${tab}`).className = 'flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-900 transition-all font-bold';
-            });
-            document.getElementById(`content-${tabName}`).classList.remove('hidden');
-            document.getElementById(`tab-${tabName}`).className = 'flex-1 py-2 rounded-lg bg-white shadow-sm text-slate-900 font-extrabold transition-all';
-            
-            applyTheme(tabThemes[tabName]);
-            
-            const settingsName = document.getElementById('settings-tab-name');
-            if (settingsName) {
-                settingsName.innerText = tabNamesRU[tabName];
-            }
-            
-            updateSettingsUI();
-        }
+// ПРАВКА 1: Переменные-флаги для заявок
+let allLeads = [];
+let currentLeadTab = 'new';
+let showAllLeadsNew = false;
+let showAllLeadsDone = false;
 
-        function toggleShowAll() {
-            showAll = !showAll;
-            renderReviews();
-        }
+const tabNamesRU = {
+    'reviews': '⭐ Отзывы',
+    'leads': '📩 Заявки',
+    'questions': '❓ Вопросы'
+};
 
-        async function loadReviews() {
-            try {
-                const response = await fetch(`${API_URL}/api/reviews?ngrok-skip-browser-warning=true`, {
-                    headers: { 'ngrok-skip-browser-warning': 'true' }
-                });
-                allReviews = await response.json();
-                renderReviews();
-            } catch (e) {
-                console.error('Ошибка:', e);
-            }
-        }
+// ИЗОЛИРОВАННЫЕ КЛЮЧИ АДМИНКИ.
+const ADMIN_KEYS = {
+    limit: 'admin_panel_limit',
+    reviews: 'admin_panel_theme_reviews',
+    leads: 'admin_panel_theme_leads',
+    questions: 'admin_panel_theme_questions'
+};
 
-        function renderReviews() {
-            const container = document.getElementById('reviews-container');
-            const loadMoreContainer = document.getElementById('load-more-container');
-            const loadMoreBtn = document.getElementById('load-more-btn');
-            container.innerHTML = '';
+let displayLimit = parseInt(localStorage.getItem(ADMIN_KEYS.limit)) || 20;
 
-            if (allReviews.length === 0) {
-                container.innerHTML = `<div class="text-center py-12"><p class="text-4xl mb-2">☕</p><p class="text-gray-400 font-medium text-sm">Новых отзывов нет</p></div>`;
-                loadMoreContainer.classList.add('hidden');
-                return;
-            }
+let tabThemes = {
+    reviews: localStorage.getItem(ADMIN_KEYS.reviews) || 'blue',
+    leads: localStorage.getItem(ADMIN_KEYS.leads) || 'yellow',
+    questions: localStorage.getItem(ADMIN_KEYS.questions) || 'green'
+};
 
-            const reviewsToDisplay = showAll ? allReviews : allReviews.slice(0, displayLimit);
+const themeStyles = {
+    white: { body: 'bg-slate-100', card: 'bg-white border-slate-200', text: 'text-slate-900' },
+    dark: { body: 'bg-slate-950', card: 'bg-slate-900 border-slate-800 text-white', text: 'text-white' },
+    blue: { body: 'bg-sky-200/90', card: 'bg-sky-50 border-sky-200', text: 'text-sky-950' },
+    yellow: { body: 'bg-amber-200/90', card: 'bg-amber-50 border-amber-200', text: 'text-amber-950' },
+    green: { body: 'bg-emerald-200/90', card: 'bg-emerald-50 border-emerald-200', text: 'text-emerald-950' }
+};
 
-            if (allReviews.length > displayLimit) {
-                loadMoreContainer.classList.remove('hidden');
-                loadMoreBtn.innerText = showAll ? "🔼 Свернуть список" : `🔽 Показать старые (ещё ${allReviews.length - displayLimit})`;
-            } else {
-                loadMoreContainer.classList.add('hidden');
-            }
+function applyTheme(themeName) {
+    const body = document.getElementById('app-body');
+    const card = document.getElementById('app-card');
+    const title = document.getElementById('header-title');
+    
+    body.className = `min-h-screen p-2 sm:p-6 font-sans antialiased pb-20 theme-transition ${themeStyles[themeName].body}`;
+    card.className = `max-w-2xl mx-auto rounded-2xl shadow-md border p-4 sm:p-6 theme-transition ${themeStyles[themeName].card}`;
+    title.className = `text-xl font-black tracking-tight ${themeStyles[themeName].text}`;
+}
 
-            reviewsToDisplay.forEach(review => {
-                const isApproved = review.status === 'approved';
-                const card = document.createElement('div');
-                card.className = `p-4 sm:p-5 rounded-xl border transition-all ${isApproved ? 'bg-white/90 border-slate-200/90 shadow-sm' : 'bg-amber-50 border-amber-300 shadow-sm'}`;
-                
-                // Обрезаем секунды
-                let displayTime = review.created_at || '';
-                if (displayTime.length > 5 && displayTime.includes(':')) {
-                    displayTime = displayTime.substring(0, displayTime.lastIndexOf(':'));
-                }
+function setTabTheme(themeName) {
+    tabThemes[currentTab] = themeName;
+    localStorage.setItem(ADMIN_KEYS[currentTab], themeName);
+    applyTheme(themeName);
+}
 
-                let adminBlock = '';
-                if (!isApproved) {
-                    adminBlock = `
-                    <div class="mt-4 pt-3 border-t border-amber-300/60 flex flex-col gap-2 sm:gap-3">
-                        <button onclick="approveOnly(${review.id})" class="w-full bg-emerald-600 text-white py-3 px-4 rounded-xl font-bold text-sm hover:bg-emerald-700 active:scale-95 transition-all shadow-sm">
-                            ✓ Одобрить без ответа
-                        </button>
-                        <div class="flex flex-col sm:flex-row gap-2">
-                            <input type="text" id="reply-${review.id}" placeholder="Ваш ответ..." class="w-full border border-amber-300 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-base sm:text-sm text-slate-800">
-                            <button onclick="sendReply(${review.id})" class="w-full sm:w-auto bg-amber-500 text-white py-3 px-5 rounded-xl font-bold text-sm hover:bg-amber-600 active:scale-95 transition-all shadow-sm whitespace-nowrap">
-                                Ответить
-                            </button>
-                        </div>
-                    </div>`;
-                } else if (review.admin_answer) {
-                    const safeAnswer = review.admin_answer.replace(/"/g, '&quot;');
-                    adminBlock = `
-                    <div class="mt-3 bg-slate-50 p-3 rounded-lg border-l-4 border-emerald-500 shadow-sm">
-                        <div class="flex justify-between items-center mb-1">
-                            <p class="text-[10px] text-emerald-600 font-extrabold uppercase tracking-wider">Ответ Зеркала</p>
-                            <button onclick="toggleEditReply(${review.id})" class="text-slate-400 hover:text-amber-600 text-[11px] font-bold transition-colors">✏️ Изменить</button>
-                        </div>
-                        <div id="reply-view-${review.id}">
-                            <p class="text-sm text-slate-700 font-medium">${review.admin_answer}</p>
-                        </div>
-                        <div id="reply-edit-${review.id}" class="hidden mt-2 space-y-2">
-                            <input type="text" id="edit-input-${review.id}" value="${safeAnswer}" class="w-full border border-amber-300 p-2.5 rounded-xl text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            <div class="flex gap-2 justify-end">
-                                <button onclick="toggleEditReply(${review.id})" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-bold transition-all">Отмена</button>
-                                <button onclick="saveEditedReply(${review.id})" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold transition-all shadow-sm">Сохранить</button>
-                            </div>
-                        </div>
-                    </div>`;
-                } else {
-                    adminBlock = `
-                    <div class="mt-3 pt-2 border-t border-slate-200/80">
-                        <div class="flex flex-col sm:flex-row gap-2">
-                            <input type="text" id="reply-${review.id}" placeholder="Ответить клиенту..." class="w-full border border-slate-300 p-2.5 rounded-xl text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            <button onclick="sendReply(${review.id})" class="bg-amber-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs hover:bg-amber-600 active:scale-95 transition-all shadow-sm whitespace-nowrap">
-                                Ответить
-                            </button>
-                        </div>
-                    </div>`;
-                }
+function toggleSettings() {
+    document.getElementById('settings-panel').classList.toggle('hidden');
+    updateSettingsUI();
+}
 
-                card.innerHTML = `
-                    <div class="flex justify-between items-start gap-2 mb-2">
-                        <div class="flex items-center gap-2">
-                            <span class="px-2.5 py-0.5 rounded-md text-[11px] font-extrabold uppercase tracking-wider ${isApproved ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-200 text-amber-900'}">
-                                ${isApproved ? '✓ Опубликован' : '⏳ Ожидает'}
-                            </span>
-                            <span class="text-[11px] font-semibold text-slate-500">🕒 ${displayTime}</span>
-                        </div>
-                        <button onclick="deleteReview(${review.id})" class="text-slate-400 hover:text-red-500 p-1 rounded-lg transition-colors text-sm font-bold active:bg-red-50" title="Удалить навсегда">🗑️</button>
+function setLimit(val) {
+    displayLimit = val;
+    localStorage.setItem(ADMIN_KEYS.limit, val);
+    updateSettingsUI();
+    renderReviews();
+    renderLeads(); // Обновляем лимит и в заявках тоже
+}
+
+function updateSettingsUI() {
+    [15, 20, 25].forEach(l => {
+        const btn = document.getElementById(`limit-${l}`);
+        if (btn) btn.className = (l === displayLimit) 
+            ? 'flex-1 py-1.5 rounded-lg border-2 border-emerald-500 font-extrabold bg-emerald-50 text-emerald-800'
+            : 'flex-1 py-1.5 rounded-lg border font-bold bg-white text-slate-700';
+    });
+}
+
+function switchTab(tabName) {
+    currentTab = tabName;
+    ['reviews', 'leads', 'questions'].forEach(tab => {
+        document.getElementById(`content-${tab}`).classList.add('hidden');
+        document.getElementById(`tab-${tab}`).className = 'flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-900 transition-all font-bold';
+    });
+    document.getElementById(`content-${tabName}`).classList.remove('hidden');
+    document.getElementById(`tab-${tabName}`).className = 'flex-1 py-2 rounded-lg bg-white shadow-sm text-slate-900 font-extrabold transition-all';
+    
+    applyTheme(tabThemes[tabName]);
+    
+    const settingsName = document.getElementById('settings-tab-name');
+    if (settingsName) {
+        settingsName.innerText = tabNamesRU[tabName];
+    }
+    
+    updateSettingsUI();
+
+    if (tabName === 'leads') {
+        loadLeads();
+    }
+}
+
+function toggleShowAll() {
+    showAll = !showAll;
+    renderReviews();
+}
+
+async function loadReviews() {
+    try {
+        const response = await fetch(`${API_URL}/api/reviews?ngrok-skip-browser-warning=true`, {
+            headers: { 'ngrok-skip-browser-warning': 'true' }
+        });
+        allReviews = await response.json();
+        renderReviews();
+    } catch (e) {
+        console.error('Ошибка:', e);
+    }
+}
+
+function renderReviews() {
+    const container = document.getElementById('reviews-container');
+    const loadMoreContainer = document.getElementById('load-more-container');
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    container.innerHTML = '';
+
+    if (allReviews.length === 0) {
+        container.innerHTML = `<div class="text-center py-12"><p class="text-4xl mb-2">☕</p><p class="text-gray-400 font-medium text-sm">Новых отзывов нет</p></div>`;
+        loadMoreContainer.classList.add('hidden');
+        return;
+    }
+
+    const reviewsToDisplay = showAll ? allReviews : allReviews.slice(0, displayLimit);
+
+    if (allReviews.length > displayLimit) {
+        loadMoreContainer.classList.remove('hidden');
+        loadMoreBtn.innerText = showAll ? "🔼 Свернуть список" : `🔽 Показать старые (ещё ${allReviews.length - displayLimit})`;
+    } else {
+        loadMoreContainer.classList.add('hidden');
+    }
+
+    reviewsToDisplay.forEach(review => {
+        const isApproved = review.status === 'approved';
+        const card = document.createElement('div');
+        card.className = `p-4 sm:p-5 rounded-xl border transition-all ${isApproved ? 'bg-white/90 border-slate-200/90 shadow-sm' : 'bg-amber-50 border-amber-300 shadow-sm'}`;
+        
+        // Время выводится полностью, без обрезки
+        let displayTime = review.created_at || '';
+
+        let adminBlock = '';
+        if (!isApproved) {
+            adminBlock = `
+            <div class="mt-4 pt-3 border-t border-amber-300/60 flex flex-col gap-2 sm:gap-3">
+                <button onclick="approveOnly(${review.id})" class="w-full bg-emerald-600 text-white py-3 px-4 rounded-xl font-bold text-sm hover:bg-emerald-700 active:scale-95 transition-all shadow-sm">
+                    ✓ Одобрить без ответа
+                </button>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="text" id="reply-${review.id}" placeholder="Ваш ответ..." class="w-full border border-amber-300 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-base sm:text-sm text-slate-800">
+                    <button onclick="sendReply(${review.id})" class="w-full sm:w-auto bg-amber-500 text-white py-3 px-5 rounded-xl font-bold text-sm hover:bg-amber-600 active:scale-95 transition-all shadow-sm whitespace-nowrap">
+                        Ответить
+                    </button>
+                </div>
+            </div>`;
+        } else if (review.admin_answer) {
+            const safeAnswer = review.admin_answer.replace(/"/g, '&quot;');
+            adminBlock = `
+            <div class="mt-3 bg-slate-50 p-3 rounded-lg border-l-4 border-emerald-500 shadow-sm">
+                <div class="flex justify-between items-center mb-1">
+                    <p class="text-[10px] text-emerald-600 font-extrabold uppercase tracking-wider">Ответ Зеркала</p>
+                    <button onclick="toggleEditReply(${review.id})" class="text-slate-400 hover:text-amber-600 text-[11px] font-bold transition-colors">✏️ Изменить</button>
+                </div>
+                <div id="reply-view-${review.id}">
+                    <p class="text-sm text-slate-700 font-medium">${review.admin_answer}</p>
+                </div>
+                <div id="reply-edit-${review.id}" class="hidden mt-2 space-y-2">
+                    <input type="text" id="edit-input-${review.id}" value="${safeAnswer}" class="w-full border border-amber-300 p-2.5 rounded-xl text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    <div class="flex gap-2 justify-end">
+                        <button onclick="toggleEditReply(${review.id})" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-bold transition-all">Отмена</button>
+                        <button onclick="saveEditedReply(${review.id})" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold transition-all shadow-sm">Сохранить</button>
                     </div>
-                    <div class="mb-1">
-                        <h3 class="font-bold text-base text-slate-900">${review.author_name}</h3>
-                        <p class="text-slate-700 text-sm mt-1 leading-relaxed">${review.text}</p>
-                    </div>
-                    ${adminBlock}
-                `;
-                container.appendChild(card);
-            });
+                </div>
+            </div>`;
+        } else {
+            adminBlock = `
+            <div class="mt-3 pt-2 border-t border-slate-200/80">
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="text" id="reply-${review.id}" placeholder="Ответить клиенту..." class="w-full border border-slate-300 p-2.5 rounded-xl text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    <button onclick="sendReply(${review.id})" class="bg-amber-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs hover:bg-amber-600 active:scale-95 transition-all shadow-sm whitespace-nowrap">
+                        Ответить
+                    </button>
+                </div>
+            </div>`;
         }
 
-        function toggleEditReply(id) {
-            document.getElementById(`reply-view-${id}`).classList.toggle('hidden');
-            document.getElementById(`reply-edit-${id}`).classList.toggle('hidden');
+        card.innerHTML = `
+            <div class="flex justify-between items-start gap-2 mb-2">
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-md text-[11px] font-extrabold uppercase tracking-wider ${isApproved ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-200 text-amber-900'}">
+                        ${isApproved ? '✓ Опубликован' : '⏳ Ожидает'}
+                    </span>
+                    <span class="text-[11px] font-semibold text-slate-500">🕒 ${displayTime}</span>
+                </div>
+                <button onclick="deleteReview(${review.id})" class="text-slate-400 hover:text-red-500 p-1 rounded-lg transition-colors text-sm font-bold active:bg-red-50" title="Удалить навсегда">🗑️</button>
+            </div>
+            <div class="mb-1">
+                <h3 class="font-bold text-base text-slate-900">${review.author_name}</h3>
+                <p class="text-slate-700 text-sm mt-1 leading-relaxed">${review.text}</p>
+            </div>
+            ${adminBlock}
+        `;
+        container.appendChild(card);
+    });
+}
+
+function toggleEditReply(id) {
+    document.getElementById(`reply-view-${id}`).classList.toggle('hidden');
+    document.getElementById(`reply-edit-${id}`).classList.toggle('hidden');
+}
+
+async function saveEditedReply(id) {
+    const input = document.getElementById(`edit-input-${id}`);
+    const answer = input ? input.value.trim() : '';
+    if (!answer) { alert('Ответ не может быть пустым!'); return; }
+    await fetch(`${API_URL}/api/reviews/${id}/reply?ngrok-skip-browser-warning=true`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+        body: JSON.stringify({ admin_answer: answer })
+    });
+    loadReviews();
+}
+
+async function sendReply(id) {
+    const input = document.getElementById(`reply-${id}`);
+    const answer = input.value.trim();
+    if (!answer) { alert('Напишите текст ответа!'); return; }
+    await fetch(`${API_URL}/api/reviews/${id}/reply?ngrok-skip-browser-warning=true`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+        body: JSON.stringify({ admin_answer: answer })
+    });
+    loadReviews();
+}
+
+async function approveOnly(id) {
+    await fetch(`${API_URL}/api/reviews/${id}/approve?ngrok-skip-browser-warning=true`, { method: 'PUT', headers: { 'ngrok-skip-browser-warning': 'true' } });
+    loadReviews();
+}
+
+async function deleteReview(id) {
+    if (confirm("Удалить этот отзыв НАВСЕГДА?")) {
+        await fetch(`${API_URL}/api/reviews/${id}?ngrok-skip-browser-warning=true`, { 
+            method: 'DELETE',
+            headers: { 'ngrok-skip-browser-warning': 'true' }
+        });
+        loadReviews();
+    }
+}
+
+// ЗАЩИТА: Восстановление темы при возврате на страницу
+window.addEventListener('pageshow', () => {
+    tabThemes = {
+        reviews: localStorage.getItem(ADMIN_KEYS.reviews) || 'blue',
+        leads: localStorage.getItem(ADMIN_KEYS.leads) || 'yellow',
+        questions: localStorage.getItem(ADMIN_KEYS.questions) || 'green'
+    };
+    applyTheme(tabThemes[currentTab]);
+});
+
+// ================= 📩 ЗАЯВКИ (LEADS) =================
+
+// Имя оператора: спрашиваем один раз, храним в localStorage
+function getAdminName() {
+    let name = localStorage.getItem('admin_operator_name');
+    if (!name) {
+        name = prompt('Как вас зовут? (для отметки «взято в работу»)');
+        if (name && name.trim()) {
+            name = name.trim();
+            localStorage.setItem('admin_operator_name', name);
+        } else {
+            name = 'Админ';
+        }
+    }
+    return name;
+}
+
+async function loadLeads() {
+    try {
+        const response = await fetch(`${API_URL}/api/leads?ngrok-skip-browser-warning=true`, {
+            headers: { 'ngrok-skip-browser-warning': 'true' }
+        });
+        allLeads = await response.json();
+        renderLeads();
+        switchLeadTab(currentLeadTab);
+    } catch (e) {
+        console.error('Ошибка загрузки заявок:', e);
+    }
+}
+
+function switchLeadTab(tab) {
+    currentLeadTab = tab;
+    const newC = document.getElementById('leads-new-container');
+    const doneC = document.getElementById('leads-done-container');
+    const btnNew = document.getElementById('subtab-new');
+    const btnDone = document.getElementById('subtab-done');
+
+    if (tab === 'new') {
+        newC.classList.remove('hidden');
+        doneC.classList.add('hidden');
+        btnNew.className = 'flex-1 py-2 rounded-lg bg-white shadow-sm text-slate-900 font-extrabold transition-all';
+        btnDone.className = 'flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-900 font-bold transition-all';
+    } else {
+        doneC.classList.remove('hidden');
+        newC.classList.add('hidden');
+        btnDone.className = 'flex-1 py-2 rounded-lg bg-white shadow-sm text-slate-900 font-extrabold transition-all';
+        btnNew.className = 'flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-900 font-bold transition-all';
+    }
+    
+    renderLeads(); // ПРИМЕНЯЕТ ПРАВИЛА ВИДИМОСТИ КНОПОК ПРИ ПЕРЕКЛЮЧЕНИИ
+}
+
+function buildLeadCard(lead, myName) {
+    const displayTime = lead.created_at || '';
+    const phoneDigits = (lead.phone || '').replace(/\D/g, '');
+    const safeName = (lead.name || '').replace(/"/g, '&quot;');
+
+    let statusBadge = '';
+    let actionBlock = '';
+
+    if (lead.status === 'new') {
+        statusBadge = `<span class="px-2.5 py-0.5 rounded-md text-[11px] font-extrabold uppercase tracking-wider bg-amber-200 text-amber-900">🟡 Новая</span>`;
+        actionBlock = `
+            <button onclick="lockLead(${lead.id})" class="w-full bg-sky-600 text-white py-3 px-4 rounded-xl font-bold text-sm hover:bg-sky-700 active:scale-95 transition-all shadow-sm">
+                📞 Взять в работу
+            </button>`;
+    } else if (lead.status === 'in_progress') {
+        const isMine = lead.locked_by === myName;
+        statusBadge = `<span class="px-2.5 py-0.5 rounded-md text-[11px] font-extrabold uppercase tracking-wider bg-sky-200 text-sky-900">🔵 В работе${lead.locked_by ? ' у ' + lead.locked_by : ''}</span>`;
+
+        if (isMine) {
+            actionBlock = `
+            <div class="grid grid-cols-2 gap-2 mb-3">
+                <a href="https://wa.me/${phoneDigits}" target="_blank" class="text-center bg-green-500 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-green-600 active:scale-95 transition-all shadow-sm">💬 WhatsApp</a>
+                <a href="https://t.me/+${phoneDigits}" target="_blank" class="text-center bg-sky-500 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-sky-600 active:scale-95 transition-all shadow-sm">✈️ Telegram</a>
+                <button onclick="copyForMax('${lead.phone}')" class="text-center bg-indigo-500 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-indigo-600 active:scale-95 transition-all shadow-sm">Ⓜ️ МАХ</button>
+                <a href="tel:+${phoneDigits}" class="text-center bg-slate-700 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-slate-800 active:scale-95 transition-all shadow-sm">📱 Звонок</a>
+            </div>
+            <div class="flex flex-col gap-2 pt-2 border-t border-sky-200/60">
+                <button onclick="completeLead(${lead.id})" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-bold text-sm hover:bg-emerald-700 active:scale-95 transition-all shadow-sm">
+                    ✅ Принято
+                </button>
+            </div>`;
+        } else {
+            actionBlock = `<div class="text-center py-2 text-xs text-slate-500 font-semibold bg-slate-100 rounded-xl">🔒 Заявку обрабатывает ${lead.locked_by || 'другой оператор'}</div>`;
+        }
+    } else if (lead.status === 'completed') {
+        statusBadge = `<span class="px-2.5 py-0.5 rounded-md text-[11px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-800">✅ Обработана</span>`;
+        actionBlock = `
+            ${lead.locked_by ? `<div class="bg-slate-50 p-3 rounded-lg border-l-4 border-emerald-500 mb-3 text-sm"><p class="text-slate-400 text-[11px]">👤 Обработал: ${lead.locked_by}</p></div>` : ''}
+            <button onclick="returnLead(${lead.id})" class="w-full bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-300 active:scale-95 transition-all">
+                ↩️ Вернуть в новые
+            </button>`;
+    }
+
+    const card = document.createElement('div');
+    card.className = 'p-4 sm:p-5 rounded-xl border bg-white/90 border-slate-200/90 shadow-sm transition-all';
+    
+    // ПРАВКА 5: Убрал строку вывода телефона <p>📞 ${lead.phone}</p>
+    card.innerHTML = `
+        <div class="flex justify-between items-start gap-2 mb-2">
+            ${statusBadge}
+            <span class="text-[11px] font-semibold text-slate-500">🕒 ${displayTime}</span>
+        </div>
+        <div class="mb-3">
+            <h3 class="font-bold text-base text-slate-900">${safeName}</h3>
+            ${lead.email ? `<p class="text-slate-500 text-xs mt-0.5">✉️ ${lead.email}</p>` : ''}
+            <div class="flex gap-2 mt-1.5 text-[11px]">
+                <span class="px-2 py-0.5 bg-slate-100 rounded-md text-slate-600 font-semibold">💬 ${lead.messenger_pref || 'Звонок'}</span>
+            </div>
+        </div>
+        ${actionBlock}
+    `;
+    return card;
+}
+
+// ПРАВКА 3: Полная переработка логики renderLeads() с учетом лимитов и кнопок
+function renderLeads() {
+    const newContainer = document.getElementById('leads-new-container');
+    const doneContainer = document.getElementById('leads-done-container');
+    const newMoreContainer = document.getElementById('leads-new-more-container');
+    const newMoreBtn = document.getElementById('leads-new-more-btn');
+    const doneMoreContainer = document.getElementById('leads-done-more-container');
+    const doneMoreBtn = document.getElementById('leads-done-more-btn');
+
+    newContainer.innerHTML = '';
+    doneContainer.innerHTML = '';
+
+    const myName = localStorage.getItem('admin_operator_name') || '';
+
+    const newLeads = allLeads.filter(l => l.status === 'new' || l.status === 'in_progress');
+    const doneLeads = allLeads.filter(l => l.status === 'completed');
+
+    // === ПОДРАЗДЕЛ "НОВЫЕ" ===
+    if (newLeads.length === 0) {
+        newContainer.innerHTML = `<div class="text-center py-12"><p class="text-4xl mb-2">📥</p><p class="text-gray-400 font-medium text-sm">Новых заявок нет</p></div>`;
+        if (newMoreContainer) newMoreContainer.classList.add('hidden');
+    } else {
+        const leadsToDisplay = showAllLeadsNew ? newLeads : newLeads.slice(0, displayLimit);
+        
+        if (newLeads.length > displayLimit && currentLeadTab === 'new') {
+            if (newMoreContainer) newMoreContainer.classList.remove('hidden');
+            if (newMoreBtn) newMoreBtn.innerText = showAllLeadsNew ? "🔼 Свернуть список" : `🔽 Показать все (ещё ${newLeads.length - displayLimit})`;
+        } else {
+            if (newMoreContainer) newMoreContainer.classList.add('hidden');
         }
 
-        async function saveEditedReply(id) {
-            const input = document.getElementById(`edit-input-${id}`);
-            const answer = input ? input.value.trim() : '';
-            if (!answer) { alert('Ответ не может быть пустым!'); return; }
-            await fetch(`${API_URL}/api/reviews/${id}/reply?ngrok-skip-browser-warning=true`, {
-                method: 'PUT', headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
-                body: JSON.stringify({ admin_answer: answer })
-            });
-            loadReviews();
-        }
+        leadsToDisplay.forEach(lead => newContainer.appendChild(buildLeadCard(lead, myName)));
+    }
 
-        async function sendReply(id) {
-            const input = document.getElementById(`reply-${id}`);
-            const answer = input.value.trim();
-            if (!answer) { alert('Напишите текст ответа!'); return; }
-            await fetch(`${API_URL}/api/reviews/${id}/reply?ngrok-skip-browser-warning=true`, {
-                method: 'PUT', headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
-                body: JSON.stringify({ admin_answer: answer })
-            });
-            loadReviews();
-        }
-
-        async function approveOnly(id) {
-            await fetch(`${API_URL}/api/reviews/${id}/approve?ngrok-skip-browser-warning=true`, { method: 'PUT', headers: { 'ngrok-skip-browser-warning': 'true' } });
-            loadReviews();
-        }
-
-        async function deleteReview(id) {
-            if (confirm("Удалить этот отзыв НАВСЕГДА?")) {
-                await fetch(`${API_URL}/api/reviews/${id}?ngrok-skip-browser-warning=true`, { 
-                    method: 'DELETE',
-                    headers: { 'ngrok-skip-browser-warning': 'true' }
-                });
-                loadReviews();
-            }
-        }
-
-        // ЗАЩИТА: Восстановление темы при возврате на страницу
-        window.addEventListener('pageshow', () => {
-            tabThemes = {
-                reviews: localStorage.getItem(ADMIN_KEYS.reviews) || 'blue',
-                leads: localStorage.getItem(ADMIN_KEYS.leads) || 'yellow',
-                appointments: localStorage.getItem(ADMIN_KEYS.appointments) || 'green'
-            };
-            applyTheme(tabThemes[currentTab]);
+    // === ПОДРАЗДЕЛ "ПРИНЯТЫЕ" ===
+    if (doneLeads.length === 0) {
+        doneContainer.innerHTML = `<div class="text-center py-12"><p class="text-4xl mb-2">✅</p><p class="text-gray-400 font-medium text-sm">Принятых заявок пока нет</p></div>`;
+        if (doneMoreContainer) doneMoreContainer.classList.add('hidden');
+    } else {
+        const counts = {};
+        doneLeads.forEach(l => {
+            const who = l.locked_by || 'Без имени';
+            counts[who] = (counts[who] || 0) + 1;
         });
 
-        switchTab('reviews');
-        loadReviews();
-    </script>
+        let countsHTML = '<div class="flex flex-wrap gap-2 mb-3">';
+        Object.keys(counts).forEach(who => {
+            countsHTML += `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg text-[11px] font-bold">👤 ${who} — ${counts[who]}</span>`;
+        });
+        countsHTML += '</div>';
+        
+        doneContainer.innerHTML = countsHTML;
+        
+        const leadsToDisplay = showAllLeadsDone ? doneLeads : doneLeads.slice(0, displayLimit);
+
+        if (doneLeads.length > displayLimit && currentLeadTab === 'done') {
+            if (doneMoreContainer) doneMoreContainer.classList.remove('hidden');
+            if (doneMoreBtn) doneMoreBtn.innerText = showAllLeadsDone ? "🔼 Свернуть список" : `🔽 Показать все (ещё ${doneLeads.length - displayLimit})`;
+        } else {
+            if (doneMoreContainer) doneMoreContainer.classList.add('hidden');
+        }
+
+        leadsToDisplay.forEach(lead => doneContainer.appendChild(buildLeadCard(lead, myName)));
+    }
+}
+
+// ПРАВКА 4: Функции-переключатели
+function toggleShowAllLeadsNew() {
+    showAllLeadsNew = !showAllLeadsNew;
+    renderLeads();
+}
+
+function toggleShowAllLeadsDone() {
+    showAllLeadsDone = !showAllLeadsDone;
+    renderLeads();
+}
+
+async function lockLead(id) {
+    const adminName = getAdminName();
+    try {
+        const res = await fetch(`${API_URL}/api/leads/${id}/lock?ngrok-skip-browser-warning=true`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+            body: JSON.stringify({ admin_name: adminName })
+        });
+        if (!res.ok) {
+            alert('⚠️ Эту заявку уже взял другой оператор!');
+        }
+        loadLeads();
+    } catch (e) {
+        console.error('Ошибка:', e);
+    }
+}
+
+async function completeLead(id) {
+    await fetch(`${API_URL}/api/leads/${id}/complete?ngrok-skip-browser-warning=true`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+        body: JSON.stringify({ task_result: 'Принято', comment: '' })
+    });
+    loadLeads();
+}
+
+async function returnLead(id) {
+    if (!confirm('Вернуть заявку в «Новые»?')) return;
+    const res = await fetch(`${API_URL}/api/leads/${id}/reopen?ngrok-skip-browser-warning=true`, {
+        method: 'PUT',
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+    });
+    if (!res.ok) {
+        alert('⚠️ Ошибка при возврате заявки на сервере.');
+        return;
+    }
+    currentLeadTab = 'new';
+    loadLeads();
+}
+
+// МАХ: копируем номер в буфер + показываем мятный тост
+function copyForMax(phone) {
+    const digits = (phone || '').replace(/\D/g, '');
+    const pretty = '+' + digits;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(pretty).catch(function(){});
+    }
+    document.getElementById('max-toast-phone').innerText = 'Номер ' + pretty + ' скопирован';
+    document.getElementById('max-toast').classList.remove('hidden');
+}
+
+function closeMaxToast() {
+    document.getElementById('max-toast').classList.add('hidden');
+}
+
+switchTab('reviews');
+loadReviews();
+
+</script>
+
+
 </body>
 </html>
